@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ficha de Disponibilidade e Avaliação de Processos · Pulsão TEA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B2E3C; --navy-2:#134457; --teal:#0F7C7C; --teal-l:#E6F3F3; --teal-m:#BFE0E0;
+  --coral:#F26B5B; --coral-l:#FDECE9; --bg:#F3F7F7; --txt:#1d2b31; --mut:#5b6b72; --line:#D5E2E4;
+  --ok:#1f7a50; --err:#b03a2e; --white:#fff;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.55;font-size:15px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+
+/* Cabeçalho */
+header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(242,107,91,.18)}
+.head{display:flex;align-items:center;gap:18px;padding:24px 16px 20px;position:relative;z-index:1}
+.logo-img{height:76px;width:auto;display:block;background:#fff;border-radius:12px;padding:6px 10px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.logo-fallback{display:none;font-weight:800;letter-spacing:.1em;font-size:22px}
+.logo-fallback span{color:var(--coral)}
+.head-txt h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.01em}
+.head-txt p{margin:2px 0 0;font-size:13px;opacity:.9}
+.bar{height:5px;background:linear-gradient(90deg,var(--coral) 0 30%,var(--teal) 30% 100%)}
+
+main{padding:22px 0 56px}
+
+/* Cartões e seções */
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px;box-shadow:0 1px 2px rgba(11,46,60,.04)}
+.sec-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--teal);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+.sec-head h2{margin:2px 0 2px;font-size:17px;color:var(--navy)}
+.sec-head p{margin:0;color:var(--mut);font-size:13px}
+
+/* Orientações */
+.objetivo{background:var(--navy);color:#fff;border-radius:14px;padding:22px;margin-bottom:16px}
+.objetivo h2{margin:0 0 6px;font-size:18px;color:#fff}
+.objetivo p{margin:0 0 10px;font-size:14px;opacity:.95}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 4px}
+.kpi{background:rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;font-size:13px}
+.kpi strong{display:block;font-size:15px;color:#FFD2CB}
+.guide{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:10px;padding:14px 16px;font-size:14px;margin-top:12px}
+.guide ol{margin:6px 0 0 18px;padding:0}
+.guide li{margin-bottom:4px}
+.prazo{display:inline-block;margin-top:10px;background:var(--coral);color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:13px}
+@media(max-width:640px){.kpis{grid-template-columns:1fr}}
+
+/* Formulário */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.req{color:var(--coral)}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;color:var(--txt)}
+textarea{min-height:86px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);border-color:transparent}
+.hint{font-size:12px;color:var(--mut);margin-top:4px}
+.sub-title{font-weight:700;color:var(--teal);font-size:13px;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 10px}
+.check{display:flex;gap:9px;align-items:flex-start;font-weight:400;font-size:14px;color:var(--txt);margin:0;padding:7px 9px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.check:hover{background:var(--teal-l)}
+.check:has(input:checked){background:var(--teal-l);border-color:var(--teal-m)}
+.check input{margin-top:3px;accent-color:var(--teal);width:16px;height:16px;flex:none}
+.area-title{font-weight:700;color:var(--navy);margin:16px 0 6px;font-size:14px;padding:6px 10px;background:var(--bg);border-left:4px solid var(--coral);border-radius:4px}
+
+/* Disponibilidade */
+.day{display:grid;grid-template-columns:200px 1fr 1fr;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.day label.dn{margin:0;font-weight:600;display:flex;gap:9px;align-items:center;cursor:pointer}
+.day input[type=checkbox]{accent-color:var(--teal);width:18px;height:18px}
+.day select:disabled{opacity:.4}
+.day small{color:var(--mut);font-size:12px;display:block;margin-bottom:2px}
+@media(max-width:640px){.day{grid-template-columns:1fr 1fr}.day .dn{grid-column:1/-1}}
+
+/* Avaliação por situação */
+.escala{display:flex;gap:6px;font-size:12px;color:var(--mut);margin:0 0 12px;flex-wrap:wrap}
+.escala span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.av{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;background:#fff}
+.av-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.av-name{font-weight:700;color:var(--navy);font-size:14px;flex:1 1 260px}
+.av-name small{display:block;font-weight:400;color:var(--mut);font-size:12px;margin-top:2px}
+.notas{display:flex;gap:6px;flex-wrap:wrap}
+.notas input{position:absolute;opacity:0;width:1px;height:1px}
+.notas label.n{margin:0;width:42px;height:38px;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;color:var(--navy);background:#fff;font-size:14px;user-select:none}
+.notas label.n:hover{border-color:var(--teal)}
+.notas input:checked + label.n{background:var(--teal);border-color:var(--teal);color:#fff}
+.notas input:focus-visible + label.n{outline:2px solid var(--coral);outline-offset:2px}
+.notas label.na{width:56px;font-size:12px}
+.notas input[value="na"]:checked + label.na{background:var(--mut);border-color:var(--mut)}
+.av textarea{margin-top:10px;min-height:56px;font-size:14px}
+.av.invalid{border-color:var(--coral);background:var(--coral-l)}
+
+/* Elogios e sugestões */
+.elogio{background:linear-gradient(135deg,#fff 0%,var(--teal-l) 100%);border:1px solid var(--teal-m)}
+.legenda{font-size:12px;color:var(--mut);margin-top:6px}
+
+/* Consentimento e envio */
+.consent{background:var(--coral-l);border:1px solid #f6cbc3;border-radius:12px;padding:14px;font-size:13px}
+.consent label{font-weight:400;display:flex;gap:9px;align-items:flex-start;cursor:pointer;margin:0;color:var(--txt)}
+.consent input{margin-top:3px;accent-color:var(--coral);width:17px;height:17px;flex:none}
+.btn{background:var(--coral);color:#fff;border:0;border-radius:11px;padding:15px 22px;font:inherit;font-weight:700;cursor:pointer;width:100%;font-size:16px;letter-spacing:.01em}
+.btn:hover{filter:brightness(.96)}
+.btn:disabled{opacity:.6;cursor:wait}
+.msg{padding:12px 14px;border-radius:9px;margin-top:12px;font-size:14px;display:none}
+.msg.err{display:block;background:#fdecea;color:var(--err)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.done{text-align:center;padding:40px 14px}
+.done h2{font-size:22px;color:var(--navy)}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:6px 16px 30px}
+footer .bar2{height:3px;background:linear-gradient(90deg,var(--coral) 0 30%,var(--teal) 30% 100%);border-radius:3px;margin:0 auto 10px;max-width:200px}
+
+/* ===== Identidade visual Pulsão TEA (cores extraídas da logomarca) ===== */
+:root{--navy:#1B3F5E;--navy-2:#2C75AF;--teal:#4C9099;--teal-l:#EAF4F6;--teal-m:#BFDCE0;--coral:#E8604C;--coral-l:#FDEEEB;--bg:#F4F7FA;--txt:#1E2A36;--mut:#5E6B7A;--line:#D9E2EA;--sand:#E5D8A2}
+body{font-family:Inter,"Segoe UI",system-ui,sans-serif}
+h1,h2,.btn,.num,.tag,.prazo,.kpi .v,.area-title,.sec-head h2{font-family:Poppins,Inter,sans-serif}
+header{background:#fff;color:var(--navy);box-shadow:0 1px 0 var(--line)}
+header:after{display:none}
+.head{padding:22px 16px 18px;gap:22px}
+.logo-img{height:84px;width:auto;background:none;padding:0;box-shadow:none;border-radius:0}
+.logo-fallback{display:none!important}
+.head-txt h1{color:var(--navy);font-size:21px;font-weight:700;letter-spacing:-.01em}
+.head-txt p{color:var(--mut);opacity:1;font-size:13.5px}
+.bar{height:4px;background:linear-gradient(90deg,#2C75AF 0 45%,#4C9099 45% 75%,#E8604C 75% 100%)}
+.objetivo{background:linear-gradient(135deg,#1B3F5E 0%,#2C75AF 100%)}
+.kpi strong{color:#FFD6CF}
+.guide{background:var(--teal-l);border-left-color:var(--teal)}
+.sec-head .num{background:linear-gradient(135deg,#2C75AF,#4C9099)}
+.area-title{color:var(--navy);border-left-color:var(--coral);background:#F4F7FA}
+.check:has(input:checked){background:var(--teal-l);border-color:var(--teal-m)}
+.btn{background:var(--coral);letter-spacing:.01em}
+.card{box-shadow:0 1px 3px rgba(27,63,94,.06)}
+footer{font-size:12px}
+.swatches{display:flex;justify-content:center;gap:8px;margin:0 auto 10px}
+.swatches i{width:14px;height:14px;border-radius:50%;display:inline-block}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <img class="logo-img" src="data:image/jpeg;base64,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" alt="Pulsão TEA"
+         onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'">
+    <div class="logo-fallback" id="logo-fallback">PULSÃO <span>TEA</span></div>
+    <div class="head-txt">
+      <h1>Ficha de Disponibilidade e Avaliação de Processos</h1>
+      <p>Levantamento da equipe · uso interno da gestão</p>
+    </div>
+  </div>
+  <div class="bar"></div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <div id="form-wrap">
+
+    <!-- OBJETIVO -->
+    <section class="objetivo">
+      <h2>Por que estamos fazendo este levantamento</h2>
+      <p>Queremos entender, com quem está na ponta, <strong>como a clínica funciona de fato</strong>: onde a rotina flui, onde há retrabalho e quais oportunidades existem. Suas respostas vão embasar três decisões: a <strong>capacidade real de atendimento</strong> de cada especialidade, a <strong>organização das grades terapêuticas</strong> e a <strong>estruturação dos fluxos</strong> da clínica.</p>
+      <div class="kpis">
+        <div class="kpi"><strong>~10 minutos</strong>tempo estimado para preencher</div>
+        <div class="kpi"><strong>05/11/2026</strong>data limite para envio</div>
+        <div class="kpi"><strong>Confidencial</strong>acesso restrito à gestão</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-head">
+        <div class="num">i</div>
+        <div><h2>Como preencher</h2><p>Leia antes de começar.</p></div>
+      </div>
+      <div class="guide" style="margin-top:0">
+        <ol>
+          <li>Preencha seus dados exatamente como constam no seu conselho profissional. Campos com <span class="req">*</span> são obrigatórios.</li>
+          <li>Marque <strong>todos os procedimentos que você realiza de fato</strong>, em qualquer área. Exemplo: um fisioterapeuta pode realizar psicomotricidade, hidroterapia e supervisão.</li>
+          <li>Informe apenas os <strong>dias e horários em que você pode receber novos atendimentos</strong>, não sua agenda já ocupada.</li>
+          <li>Na Seção 5, dê uma <strong>nota de 1 a 5</strong> para cada situação e, se quiser, explique a nota na observação.</li>
+          <li>Registre <strong>elogios</strong> (o que funciona e deve ser mantido) e <strong>sugestões</strong> (o que pode melhorar). Essas contribuições são a parte mais valiosa do levantamento.</li>
+          <li>Se precisar corrigir, preencha novamente com o mesmo e-mail: a última resposta substitui a anterior.</li>
+        </ol>
+        <span class="prazo">Prazo para envio: 05/11/2026</span>
+      </div>
+    </section>
+
+    <form id="ficha" novalidate>
+
+      <!-- 1. IDENTIFICAÇÃO -->
+      <section class="card">
+        <div class="sec-head">
+          <div class="num">1</div>
+          <div><h2>Identificação</h2><p>Usada para cadastro e controle de quem já respondeu. Não é divulgada.</p></div>
+        </div>
+        <div class="grid">
+          <div class="full"><label for="nome">Nome completo <span class="req">*</span></label><input type="text" id="nome" name="nome" required autocomplete="name"></div>
+          <div>
+            <label for="conselho">Conselho profissional <span class="req">*</span></label>
+            <select id="conselho" name="conselho" required>
+              <option value="">Selecione</option>
+              <option>CRP (Psicologia)</option>
+              <option>CREFITO (Fisioterapia / Terapia Ocupacional)</option>
+              <option>CREFONO (Fonoaudiologia)</option>
+              <option>CRN (Nutrição)</option>
+              <option>CREF (Educação Física)</option>
+              <option>Outro conselho</option>
+              <option>Estagiário</option>
+              <option>Sem conselho (ex.: Pedagogia, Acompanhamento Terapêutico)</option>
+            </select>
+          </div>
+          <div>
+            <label for="registro">Número de registro <span class="req">*</span></label>
+            <input type="text" id="registro" name="registro" placeholder="Ex.: 06/123456 ou 12345">
+            <label class="check" style="margin:6px 0 0;padding:4px 0"><input type="checkbox" id="ausente" name="ausente"> Ausente de numeração</label>
+            <div class="hint"><span class="req">*</span> Para estagiários ou especialidades sem conselho, marque <strong>Ausente de numeração</strong>.</div>
+          </div>
+          <div><label for="uf_conselho">UF do conselho</label><input type="text" id="uf_conselho" name="uf_conselho" maxlength="2" placeholder="Ex.: SP"></div>
+          <div><label for="cpf">CPF <span class="req">*</span></label><input type="text" id="cpf" name="cpf" required inputmode="numeric" placeholder="000.000.000-00"></div>
+          <div><label for="cnpj">CNPJ (se atua como pessoa jurídica)</label><input type="text" id="cnpj" name="cnpj" inputmode="numeric" placeholder="00.000.000/0000-00"></div>
+          <div><label for="email">E-mail <span class="req">*</span></label><input type="email" id="email" name="email" required autocomplete="email"><div class="hint">Use sempre o mesmo e-mail em todos os envios.</div></div>
+          <div><label for="whatsapp">WhatsApp <span class="req">*</span></label><input type="tel" id="whatsapp" name="whatsapp" required placeholder="(00) 00000-0000"></div>
+        </div>
+      </section>
+
+      <!-- 2. FORMAÇÃO -->
+      <section class="card">
+        <div class="sec-head">
+          <div class="num">2</div>
+          <div><h2>Formação e experiência</h2><p>Informe todas as formações relevantes para os atendimentos.</p></div>
+        </div>
+        <div class="grid">
+          <div class="full"><label for="graduacao">Graduação <span class="req">*</span></label><input type="text" id="graduacao" name="graduacao" required placeholder="Ex.: Psicologia – Universidade X"></div>
+          <div><label for="ano_conclusao">Ano de conclusão</label><input type="number" id="ano_conclusao" name="ano_conclusao" min="1950" max="2030"></div>
+          <div><label for="anos_tea">Anos de experiência com TEA</label><input type="number" id="anos_tea" name="anos_tea" min="0" max="60"></div>
+          <div class="full"><label for="pos">Pós-graduações, especializações, mestrado, doutorado e cursos relevantes</label><textarea id="pos" name="pos" placeholder="Ex.: Especialização em ABA – Instituto Y (2021); Curso de Integração Sensorial (2023)"></textarea></div>
+          <div>
+            <label for="formacao_tea">Formação específica em ABA / TEA <span class="req">*</span></label>
+            <select id="formacao_tea" name="formacao_tea" required>
+              <option value="">Selecione</option>
+              <option>Sim, formação completa em ABA</option>
+              <option>Sim, formação ou curso específico em TEA</option>
+              <option>Em formação (cursando)</option>
+              <option>Não</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ESPECIALIDADE E PROCEDIMENTOS -->
+      <section class="card">
+        <div class="sec-head">
+          <div class="num">3</div>
+          <div><h2>Especialidade e procedimentos</h2><p>Escolha a área principal e marque <strong>todos</strong> os procedimentos que você realiza, inclusive de outras áreas.</p></div>
+        </div>
+        <div class="grid">
+          <div class="full">
+            <label for="area">Área principal de atuação <span class="req">*</span></label>
+            <select id="area" name="area" required></select>
+          </div>
+        </div>
+        <div id="procedimentos" style="margin-top:8px"></div>
+      </section>
+
+      <!-- 4. DISPONIBILIDADE -->
+      <section class="card">
+        <div class="sec-head">
+          <div class="num">4</div>
+          <div><h2>Disponibilidade para atendimento</h2><p>Marque cada dia em que você atende e informe o horário de início e de término. Ao menos um dia é obrigatório.</p></div>
+        </div>
+        <div id="dias"></div>
+        <div class="grid" style="margin-top:14px">
+          <div class="full">
+            <label for="obs_disp">Observações sobre disponibilidade</label>
+            <textarea id="obs_disp" name="obs_disp" placeholder="Ex.: Prefiro manhãs às terças; não atendo às sextas após 16h; disponível para hidroterapia somente com outro profissional."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. AVALIAÇÃO DE PROCESSOS -->
+      <section class="card">
+        <div class="sec-head">
+          <div class="num">5</div>
+          <div><h2>Avaliação dos processos e fluxos da clínica</h2><p>Dê uma nota para cada etapa, considerando como ela funciona hoje na clínica.</p></div>
+        </div>
+        <div class="escala">
+          <span><strong>1</strong> crítico, precisa de intervenção urgente</span>
+          <span><strong>2</strong> frágil, com retrabalho frequente</span>
+          <span><strong>3</strong> razoável, funciona com ressalvas</span>
+          <span><strong>4</strong> bom, com ajustes pontuais</span>
+          <span><strong>5</strong> excelente, referência</span>
+        </div>
+        <div id="avaliacao"></div>
+        <div class="legenda">Você pode deixar observações em qualquer etapa.</div>
+      </section>
+
+      <!-- 6. ELOGIOS -->
+      <section class="card elogio">
+        <div class="sec-head">
+          <div class="num" style="background:var(--coral)">6</div>
+          <div><h2>Elogios e reconhecimentos</h2><p>O que funciona bem e deve ser mantido? Quem ou qual processo merece destaque?</p></div>
+        </div>
+        <div class="grid">
+          <div class="full"><label for="elogios">Elogios à clínica, a um setor, a um processo ou a uma pessoa</label><textarea id="elogios" name="elogios" placeholder="Ex.: A equipe de acolhimento deixa as famílias muito seguras no primeiro contato."></textarea></div>
+        </div>
+      </section>
+
+      <!-- 7. SUGESTÕES -->
+      <section class="card">
+        <div class="sec-head">
+          <div class="num">7</div>
+          <div><h2>Sugestões, melhorias e oportunidades</h2><p>Seção aberta. Compartilhe o que você observa na rotina. Todas as contribuições são lidas pela gestão.</p></div>
+        </div>
+        <div class="grid">
+          <div class="full"><label for="melhorias">Pontos de melhoria que você identifica</label><textarea id="melhorias" name="melhorias" placeholder="Ex.: Materiais de sessão ficam em locais diferentes em cada unidade."></textarea></div>
+          <div class="full"><label for="fluxos">Fluxos, gargalos ou retrabalhos que atrapalham seu atendimento</label><textarea id="fluxos" name="fluxos" placeholder="Ex.: Demora para receber a grade terapêutica após a admissão do paciente."></textarea></div>
+          <div class="full"><label for="oportunidades">Oportunidades de crescimento ou novos serviços</label><textarea id="oportunidades" name="oportunidades" placeholder="Ex.: Grupo de habilidades sociais para adolescentes nas tardes de quinta."></textarea></div>
+          <div class="full"><label for="sugestoes">Outras sugestões ou opiniões para a clínica</label><textarea id="sugestoes" name="sugestoes" placeholder="Escreva livremente."></textarea></div>
+          <div class="full">
+            <label class="check" style="margin:0"><input type="checkbox" name="contato_ok" value="sim"> Aceito ser contatado para aprofundar alguma sugestão.</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONSENTIMENTO E ENVIO -->
+      <section class="card">
+        <div class="consent">
+          <label><input type="checkbox" id="consentimento" name="consentimento" required>
+            <span>Autorizo a Pulsão TEA a registrar e utilizar os dados informados nesta ficha (incluindo CPF e CNPJ) exclusivamente para planejamento operacional, controle de capacidade, gestão da equipe e melhoria de processos, conforme a Lei Geral de Proteção de Dados (LGPD). Os dados ficam restritos à gestão.</span>
+          </label>
+        </div>
+        <div class="hp" aria-hidden="true"><label>Não preencha: <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div style="margin-top:14px"><button class="btn" id="enviar" type="submit">Enviar ficha</button></div>
+        <div class="msg err" id="msg" role="alert"></div>
+      </section>
+
+    </form>
+  </div>
+
+  <div id="done" class="card done" style="display:none">
+    <h2>Ficha enviada com sucesso</h2>
+    <p style="font-size:15px;color:var(--mut)">Obrigada pela sua contribuição. As informações serão analisadas pela gestão e vão orientar as próximas melhorias da clínica.</p>
+    <p style="font-size:13px;color:var(--mut)">Se precisar corrigir alguma informação, preencha novamente com o mesmo e-mail.</p>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  <div class="bar2"></div>
+  <div class="swatches" aria-label="Paleta da marca"><i title="Azul Pulsão #2C75AF" style="background:#2C75AF"></i><i title="Azul profundo #1B3F5E" style="background:#1B3F5E"></i><i title="Verde-água #4C9099" style="background:#4C9099"></i><i title="Areia #E5D8A2" style="background:#E5D8A2"></i><i title="Coral #E8604C" style="background:#E8604C"></i></div>
+  Pulsão TEA · Levantamento interno de capacidade e melhoria contínua
+</footer>
+
+<script>
+/* ===================== CONFIGURAÇÃO ===================== */
+// Banco de dados (Supabase). A chave publicável é pública por desenho: só permite
+// enviar fichas pela função submit_ficha. Leitura é bloqueada para visitantes.
+const SUPABASE_URL = "https://iodglgpckklapsiyrkdb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_dqSkD5wJBDPZQu1Itc-64w_ehFyn11Z";
+
+/* ===================== DADOS DO FORMULÁRIO ===================== */
+const AREAS = {
+  "Psicologia": [
+    "Análise do Comportamento Aplicada (ABA): programas e supervisão",
+    "Avaliação psicológica ou neuropsicológica",
+    "Psicoterapia individual",
+    "Orientação parental",
+    "Orientação escolar",
+    "Atendimento em grupo (habilidades sociais)",
+    "Supervisão clínica de equipe"
+  ],
+  "Fisioterapia": [
+    "Psicomotricidade",
+    "Hidroterapia",
+    "Fisioterapia motora / desenvolvimento neuropsicomotor",
+    "Ecoterapia",
+    "Integração sensorial",
+    "Supervisão clínica de equipe"
+  ],
+  "Fonoaudiologia": [
+    "Terapia fonoaudiológica (linguagem e fala)",
+    "Comunicação alternativa / aumentativa (CAA)",
+    "Motricidade orofacial e alimentação / deglutição",
+    "Orientação parental",
+    "Supervisão clínica de equipe"
+  ],
+  "Terapia Ocupacional": [
+    "Integração sensorial",
+    "Atividades de vida diária (AVD) e autonomia",
+    "Coordenação motora e grafomotricidade",
+    "Hidroterapia",
+    "Ecoterapia",
+    "Orientação parental",
+    "Supervisão clínica de equipe"
+  ],
+  "Psicopedagogia / Pedagogia": [
+    "Apoio pedagógico e escolar",
+    "Alfabetização e letramento",
+    "Acompanhamento de adaptação escolar",
+    "Orientação escolar",
+    "Orientação parental",
+    "Supervisão pedagógica"
+  ],
+  "Educação Física": [
+    "Atividade física adaptada",
+    "Natação / hidroterapia",
+    "Psicomotricidade",
+    "Ecoterapia (atividades ao ar livre)"
+  ],
+  "Acompanhamento Terapêutico (AT)": [
+    "AT escolar",
+    "AT domiciliar",
+    "AT comunitário (passeios e inserção social)",
+    "AT em ambiente clínico"
+  ],
+  "Terapias Complementares": [
+    "Ecoterapia",
+    "Musicoterapia",
+    "Arteterapia",
+    "Equoterapia",
+    "Terapia com animais"
+  ],
+  "Nutrição": [
+    "Seletividade alimentar",
+    "Orientação nutricional para famílias"
+  ]
+};
+
+const DAYS = ["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+
+// Situações avaliadas na Seção 5 (chave, rótulo, descrição de apoio)
+const SITUACOES = [
+  {k:"acolhimento", t:"Acolhimento do paciente e triagem", d:"Primeiro contato, escuta inicial e encaminhamento"},
+  {k:"agendamento", t:"Agendamento e confirmação de sessões", d:"Marcação, remarcação, confirmação e reposição de vagas"},
+  {k:"admissao", t:"Admissão e documentação do paciente", d:"Cadastro, documentos, autorizações e início do tratamento"},
+  {k:"avaliacao", t:"Avaliação inicial do paciente", d:"Processo de avaliação, prazos e qualidade dos registros"},
+  {k:"grade", t:"Montagem da grade terapêutica", d:"Definição de horários, terapeutas, programas e continuidade"},
+  {k:"assistencial", t:"Acompanhamento assistencial", d:"Evolução, programas, metas, reuniões de equipe e alta"},
+  {k:"devolutivas", t:"Devolutivas aos pais e responsáveis", d:"Relatórios, reuniões de orientação e comunicação com a família"},
+  {k:"comunicacao", t:"Comunicação entre setores", d:"Troca de informações entre Comercial, NAE, Assistencial, Operações e Faturamento"},
+  {k:"sistemas", t:"Sistemas e ferramentas de registro", d:"Prontuário, agenda, CRM, planilhas e controle de dados"},
+  {k:"faturamento", t:"Faturamento, autorizações e operadoras", d:"Guias, glosas, liminares e relação com convênios"},
+  {k:"supervisao", t:"Supervisão e capacitação da equipe", d:"Treinamentos, supervisão clínica e integração de novos profissionais"},
+  {k:"alta", t:"Alta e encaminhamento", d:"Critérios de alta, transição e encaminhamentos externos"}
+];
+
+/* ===================== HELPERS ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const digits = s => String(s || '').replace(/\D/g, '');
+
+function timeOptions(selected){
+  let html = '';
+  for (let h = 6; h <= 21; h++){
+    for (const m of [0, 30]){
+      if (h === 21 && m === 30) continue;
+      const t = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      html += `<option value="${t}"${t === selected ? ' selected' : ''}>${t}</option>`;
+    }
+  }
+  return html;
+}
+
+function showError(text){
+  const m = $('#msg');
+  m.textContent = text;
+  m.className = 'msg err';
+  m.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ===================== MONTAGEM DINÂMICA ===================== */
+(function build(){
+  // Área principal
+  $('#area').innerHTML = '<option value="">Selecione</option>' +
+    Object.keys(AREAS).map(a => `<option>${esc(a)}</option>`).join('') +
+    '<option>Outra (descreva em Sugestões)</option>';
+
+  // Procedimentos agrupados por área
+  $('#procedimentos').innerHTML = Object.entries(AREAS).map(([area, procs]) =>
+    `<div class="area-title">${esc(area)}</div>
+     <div class="checks">` +
+     procs.map(p => `<label class="check"><input type="checkbox" name="proc" value="${esc(area + ' | ' + p)}"><span>${esc(p)}</span></label>`).join('') +
+    `</div>`
+  ).join('');
+
+  // Dias e horários
+  $('#dias').innerHTML = DAYS.map((d, i) => `
+    <div class="day">
+      <div class="dn"><label class="dn"><input type="checkbox" id="dia${i}" name="dia${i}"> ${esc(d)}</label></div>
+      <div><small>Início</small><select id="ini${i}" disabled>${timeOptions('08:00')}</select></div>
+      <div><small>Término</small><select id="fim${i}" disabled>${timeOptions('17:00')}</select></div>
+    </div>`).join('');
+
+  // "Ausente de numeração" desabilita o campo de registro
+  $('#ausente').addEventListener('change', e => {
+    $('#registro').disabled = e.target.checked;
+    if (e.target.checked) $('#registro').value = '';
+  });
+
+  DAYS.forEach((_, i) => {
+    $('#dia' + i).addEventListener('change', e => {
+      $('#ini' + i).disabled = !e.target.checked;
+      $('#fim' + i).disabled = !e.target.checked;
+    });
+  });
+
+  // Avaliação por situação: escala 1 a 5 + N/A e observação
+  $('#avaliacao').innerHTML = SITUACOES.map((s, idx) => `
+    <div class="av" data-k="${s.k}">
+      <div class="av-top">
+        <div class="av-name">${esc(s.t)}<small>${esc(s.d)}</small></div>
+        <div class="notas" role="radiogroup" aria-label="${esc(s.t)}">
+          ${[1,2,3,4,5].map(n => `
+            <input type="radio" id="n_${s.k}_${n}" name="nota_${s.k}" value="${n}">
+            <label class="n" for="n_${s.k}_${n}">${n}</label>`).join('')}
+        </div>
+      </div>
+      <textarea name="obs_${s.k}" placeholder="Observação (opcional)"></textarea>
+    </div>`).join('');
+})();
+
+/* ===================== ENVIO ===================== */
+$('#ficha').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('#msg').className = 'msg';
+  const form = e.target;
+
+  // Campo oculto anti-spam
+  if (form.website.value) return;
+
+  // Campos obrigatórios
+  const required = [...form.querySelectorAll('[required]')];
+  const vazio = required.find(el => el.type === 'checkbox' ? !el.checked : !String(el.value).trim());
+  if (vazio){
+    showError('Preencha os campos obrigatórios (marcados com *). Confira também o aceite de LGPD.');
+    vazio.focus();
+    return;
+  }
+
+  // Registro: obrigatório, exceto quando marcado como "Ausente de numeração"
+  const ausente = $('#ausente').checked;
+  if (!ausente && !$('#registro').value.trim()){
+    showError('Informe o número de registro ou marque "Ausente de numeração" (estagiários e especialidades sem conselho).');
+    $('#registro').focus();
+    return;
+  }
+
+  const cpf = digits($('#cpf').value);
+  if (cpf.length !== 11){ showError('O CPF deve ter 11 números.'); return; }
+  const cnpj = digits($('#cnpj').value);
+  if (cnpj && cnpj.length !== 14){ showError('O CNPJ deve ter 14 números (ou deixe o campo em branco).'); return; }
+
+  const procedimentos = [...form.querySelectorAll('input[name=proc]:checked')].map(i => i.value);
+  if (!procedimentos.length){ showError('Marque ao menos um procedimento na Seção 3.'); return; }
+
+  const disponibilidade = [];
+  for (let i = 0; i < DAYS.length; i++){
+    if ($('#dia' + i).checked){
+      const inicio = $('#ini' + i).value;
+      const fim = $('#fim' + i).value;
+      if (fim <= inicio){
+        showError(`Em ${DAYS[i]}, o horário de término deve ser posterior ao de início.`);
+        return;
+      }
+      disponibilidade.push({dia: DAYS[i], inicio, fim});
+    }
+  }
+  if (!disponibilidade.length){ showError('Informe ao menos um dia com horário na Seção 4.'); return; }
+
+  // Avaliação: todas as situações precisam de nota de 1 a 5
+  const avaliacao = [];
+  let faltando = null;
+  SITUACOES.forEach(s => {
+    const marcada = form.querySelector(`input[name="nota_${s.k}"]:checked`);
+    const obs = (form.elements['obs_' + s.k].value || '').trim();
+    const bloco = document.querySelector(`.av[data-k="${s.k}"]`);
+    bloco.classList.toggle('invalid', !marcada);
+    if (!marcada && !faltando) faltando = bloco;
+    avaliacao.push({
+      situacao: s.t,
+      nota: marcada ? Number(marcada.value) : null,
+      observacao: obs
+    });
+  });
+  if (faltando){
+    showError('Dê uma nota de 1 a 5 para todas as etapas da Seção 5.');
+    faltando.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  const v = name => (form.elements[name] ? form.elements[name].value.trim() : '');
+  const payload = {
+    nome: v('nome'), conselho: v('conselho'),
+    registro: ausente ? '' : v('registro'), ausente_numeracao: ausente,
+    uf_conselho: v('uf_conselho').toUpperCase(),
+    cpf, cnpj, email: v('email').toLowerCase(), whatsapp: v('whatsapp'),
+    graduacao: v('graduacao'), ano_conclusao: v('ano_conclusao'), pos: v('pos'),
+    formacao_tea: v('formacao_tea'), anos_tea: v('anos_tea'),
+    area: v('area'), procedimentos, disponibilidade, obs_disp: v('obs_disp'),
+    avaliacao,
+    elogios: v('elogios'),
+    melhorias: v('melhorias'), fluxos: v('fluxos'), oportunidades: v('oportunidades'), sugestoes: v('sugestoes'),
+    contato_ok: !!form.contato_ok.checked, consentimento: !!form.consentimento.checked,
+    enviado_em: new Date().toISOString()
+  };
+
+  const btn = $('#enviar');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_ficha`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({p: payload})
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || !out.ok){
+      showError(out.erro || 'Não foi possível enviar. Confira os dados e tente novamente.');
+      btn.disabled = false; btn.textContent = 'Enviar ficha';
+      return;
+    }
+    $('#form-wrap').style.display = 'none';
+    $('#done').style.display = 'block';
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  } catch (err) {
+    showError('Não foi possível enviar agora. Verifique sua conexão e tente novamente.');
+    btn.disabled = false; btn.textContent = 'Enviar ficha';
+  }
+});
+</script>
+</body>
+</html>

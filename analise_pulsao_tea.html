@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Análise da Disponibilidade · Pulsão TEA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2E3C;--navy-2:#134457;--teal:#0F7C7C;--teal-l:#E6F3F3;--teal-m:#BFE0E0;--coral:#F26B5B;--coral-l:#FDECE9;--bg:#F3F7F7;--txt:#1d2b31;--mut:#5b6b72;--line:#D5E2E4;--white:#fff;--warn:#8a5a00;--warn-l:#FFF4DB}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;padding:20px 0 16px;border-bottom:4px solid var(--coral)}
+.head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.head h1{margin:0;font-size:19px}
+.head p{margin:2px 0 0;opacity:.85;font-size:13px}
+.logo-img{height:56px;width:auto;background:#fff;border-radius:10px;padding:4px 8px}
+.btn{background:var(--coral);color:#fff;border:0;border-radius:9px;padding:9px 14px;font:inherit;font-weight:700;cursor:pointer;font-size:13px}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.5)}
+.btn.teal{background:var(--teal)}
+.btn:disabled{opacity:.6}
+main{padding:18px 0 50px}
+.demo{background:var(--warn-l);border:1px solid #f0d28a;color:var(--warn);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-weight:600}
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;overflow-x:auto}
+.card h2{margin:0 0 4px;font-size:16px;color:var(--navy)}
+.card .sub{margin:0 0 12px;color:var(--mut);font-size:12.5px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:12px 14px;border-top:4px solid var(--teal)}
+.kpi.c{border-top-color:var(--coral)}
+.kpi .v{font-size:22px;font-weight:800;color:var(--navy)}
+.kpi .l{font-size:12px;color:var(--mut)}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--navy);font-size:12px;background:var(--bg);position:sticky;top:0}
+td.n,th.n{text-align:right;white-space:nowrap}
+.bar{height:10px;background:var(--teal-l);border-radius:6px;overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%;background:var(--teal);border-radius:6px}
+.bar.crit i{background:var(--coral)}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+.tag.ok{background:#e4f5ec;color:#1f7a50}
+.tag.pend{background:var(--coral-l);color:#b03a2e}
+.heat{display:grid;grid-template-columns:52px repeat(6,1fr);gap:3px;font-size:11px}
+.heat .h{color:var(--mut);text-align:right;padding-right:4px;line-height:14px}
+.heat .d{font-weight:700;color:var(--navy);text-align:center;font-size:11.5px}
+.heat .c{height:14px;border-radius:3px;background:#eef5f5}
+.legend{display:flex;gap:4px;align-items:center;font-size:11px;color:var(--mut);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:10px;border-radius:2px}
+.list{display:flex;flex-direction:column;gap:8px;max-height:460px;overflow:auto;padding-right:4px}
+.item{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:9px;padding:9px 11px;background:#fff}
+.item.coral{border-left-color:var(--coral)}
+.item.gold{border-left-color:#E0A526}
+.item b{color:var(--navy)}
+.item small{color:var(--mut);display:block;font-size:12px}
+.item p{margin:4px 0 0;white-space:pre-wrap}
+.empty{color:var(--mut);font-style:italic;padding:10px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.tabs button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font:inherit;font-size:12.5px;color:var(--navy);cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+#login{max-width:440px;margin:40px auto}
+input[type=email]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:8px 0}
+.msg{margin-top:10px;font-size:13px;color:var(--mut)}
+.msg.err{color:#b03a2e}
+.hidden{display:none !important}
+.foot{color:var(--mut);font-size:12px;text-align:center;margin-top:20px}
+
+/* ===== Identidade visual Pulsão TEA (cores extraídas da logomarca) ===== */
+:root{--navy:#1B3F5E;--navy-2:#2C75AF;--teal:#4C9099;--teal-l:#EAF4F6;--teal-m:#BFDCE0;--coral:#E8604C;--coral-l:#FDEEEB;--bg:#F4F7FA;--txt:#1E2A36;--mut:#5E6B7A;--line:#D9E2EA;--sand:#E5D8A2}
+body{font-family:Inter,"Segoe UI",system-ui,sans-serif}
+h1,h2,.btn,.tabs button,.kpi .v{font-family:Poppins,Inter,sans-serif}
+header{background:#fff;color:var(--navy);border-bottom:4px solid;border-image:linear-gradient(90deg,#2C75AF,#4C9099 60%,#E8604C) 1;box-shadow:0 1px 0 var(--line)}
+.head h1{color:var(--navy);font-size:20px;letter-spacing:-.01em}
+.head p{color:var(--mut);opacity:1}
+.logo-img{height:76px;width:auto;background:none;padding:0;border-radius:0}
+.btn.ghost{color:var(--navy);border:1px solid var(--line);background:#fff}
+.btn.teal{background:linear-gradient(135deg,#2C75AF,#4C9099)}
+.tabs button.on{background:var(--navy);border-color:var(--navy)}
+.kpi{border-top-color:#4C9099}
+.kpi.c{border-top-color:var(--coral)}
+.card h2{font-family:Poppins,Inter,sans-serif}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div style="display:flex;align-items:center;gap:14px">
+      <img class="logo-img" src="data:image/jpeg;base64,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" alt="Pulsão TEA" onerror="this.style.display='none'">
+      <div>
+        <h1>Análise da disponibilidade e dos processos</h1>
+        <p>Pulsão TEA · uso restrito à gestão</p>
+      </div>
+    </div>
+    <div id="actions" class="hidden" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn teal" id="btnCsv">Baixar planilha modelo (CSV)</button>
+      <button class="btn ghost" id="btnSair">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <section id="login" class="card hidden">
+    <h2>Acesso da gestão</h2>
+    <p class="sub">Informe seu e-mail. Enviaremos um link de acesso, válido apenas para a conta da gestão.</p>
+    <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+    <button class="btn" id="btnLink" style="width:100%">Enviar link de acesso</button>
+    <div class="msg" id="loginMsg"></div>
+  </section>
+
+  <!-- PAINEL -->
+  <div id="painel" class="hidden">
+    <div id="demoBanner" class="demo hidden">DADOS DE EXEMPLO · os nomes, números e respostas abaixo são fictícios e servem apenas para visualizar o layout.</div>
+    <div id="statusMsg" class="msg" style="margin:0 0 10px"></div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="v" id="kFichas">–</div><div class="l">fichas recebidas</div></div>
+      <div class="kpi c"><div class="v" id="kPend">–</div><div class="l">pendentes na equipe</div></div>
+      <div class="kpi"><div class="v" id="kHoras">–</div><div class="l">horas disponíveis por semana</div></div>
+      <div class="kpi"><div class="v" id="kNota">–</div><div class="l">nota média dos processos (1 a 5)</div></div>
+      <div class="kpi c"><div class="v" id="kCrit">–</div><div class="l">etapas com nota 1 ou 2</div></div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="on" data-t="cap">Capacidade</button>
+      <button data-t="proc">Procedimentos</button>
+      <button data-t="grade">Grade semanal</button>
+      <button data-t="proc2">Processos</button>
+      <button data-t="fb">Elogios e sugestões</button>
+      <button data-t="pend">Equipe</button>
+    </div>
+
+    <!-- CAPACIDADE -->
+    <div class="card" data-p="cap">
+      <h2>Capacidade por especialidade</h2>
+      <p class="sub">Horas disponíveis somadas por especialidade principal de atuação. Base para planejar grades e expansão.</p>
+      <div id="tblCap"></div>
+    </div>
+
+    <!-- PROCEDIMENTOS -->
+    <div class="card hidden" data-p="proc">
+      <h2>Capacidade por procedimento</h2>
+      <p class="sub">Quantos profissionais realizam cada procedimento e quantas horas disponíveis eles têm. Um profissional pode aparecer em vários procedimentos, por isso as horas não se somam entre linhas.</p>
+      <div id="tblProc"></div>
+    </div>
+
+    <!-- GRADE -->
+    <div class="card hidden" data-p="grade">
+      <h2>Grade semanal de disponibilidade</h2>
+      <p class="sub">Número de profissionais disponíveis em cada faixa de horário. Faixas mais escuras indicam maior oferta de atendimento.</p>
+      <div id="heat"></div>
+      <div class="legend">Menos <i style="background:#eef5f5"></i><i style="background:#BFE0E0"></i><i style="background:#6fb5b5"></i><i style="background:#0F7C7C"></i> Mais profissionais</div>
+    </div>
+
+    <!-- PROCESSOS -->
+    <div class="card hidden" data-p="proc2">
+      <h2>Avaliação dos processos e fluxos</h2>
+      <p class="sub">Média das notas (1 a 5) por etapa, ordenadas da mais crítica para a mais bem avaliada. Coluna "% críticas" mostra a proporção de notas 1 ou 2.</p>
+      <div id="tblProcesso"></div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="card hidden" data-p="fb">
+      <div class="two">
+        <div>
+          <h2>Elogios</h2>
+          <p class="sub">O que deve ser mantido.</p>
+          <div class="list" id="listElogios"></div>
+        </div>
+        <div>
+          <h2>Sugestões e melhorias</h2>
+          <p class="sub">Melhorias, gargalos, oportunidades e outras sugestões.</p>
+          <div class="list" id="listSugestoes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EQUIPE -->
+    <div class="card hidden" data-p="pend">
+      <h2>Status de preenchimento</h2>
+      <p class="sub">Cruza a lista da equipe com as fichas recebidas. Para ver pendências, cadastre a equipe na tabela <code>equipe</code>.</p>
+      <div id="tblEquipe"></div>
+    </div>
+
+    <div class="foot">Os dados de CPF e CNPJ não aparecem nesta tela. Exportação CSV usa o modelo de repasse; honorários e base de repasse ficam em branco para preenchimento da gestão.</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+/* ===================== CONFIGURAÇÃO ===================== */
+const SUPABASE_URL = "https://iodglgpckklapsiyrkdb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_dqSkD5wJBDPZQu1Itc-64w_ehFyn11Z";
+const DEMO = new URLSearchParams(location.search).has('demo');
+const SITUACOES = ["Acolhimento do paciente e triagem","Agendamento e confirmação de sessões","Admissão e documentação do paciente","Avaliação inicial do paciente","Montagem da grade terapêutica","Acompanhamento assistencial","Devolutivas aos pais e responsáveis","Comunicação entre setores","Sistemas e ferramentas de registro","Faturamento, autorizações e operadoras","Supervisão e capacitação da equipe","Alta e encaminhamento"];
+const DIAS = ["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+const DIAS_CURTO = ["Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+/* ===================== HELPERS ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (n, d=1) => Number(n || 0).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
+const hora = t => String(t).slice(0,5);
+const show = (sel, on) => document.querySelector(sel).classList.toggle('hidden', !on);
+const setStatus = (t, err) => { const m = $('#statusMsg'); m.textContent = t || ''; m.classList.toggle('err', !!err); };
+
+/* ===================== DADOS DE EXEMPLO (FICTÍCIOS) ===================== */
+function dadosExemplo(){
+  const areas = ["Psicologia","Fisioterapia","Fonoaudiologia","Terapia Ocupacional","Psicopedagogia / Pedagogia","Educação Física","Acompanhamento Terapêutico (AT)","Nutrição"];
+  const procsPor = {
+    "Psicologia":["Análise do Comportamento Aplicada (ABA): programas e supervisão","Orientação parental","Orientação escolar","Supervisão clínica de equipe"],
+    "Fisioterapia":["Psicomotricidade","Hidroterapia","Ecoterapia","Integração sensorial"],
+    "Fonoaudiologia":["Terapia fonoaudiológica (linguagem e fala)","Comunicação alternativa / aumentativa (CAA)","Orientação parental"],
+    "Terapia Ocupacional":["Integração sensorial","Atividades de vida diária (AVD) e autonomia","Ecoterapia","Orientação parental"],
+    "Psicopedagogia / Pedagogia":["Apoio pedagógico e escolar","Orientação escolar","Alfabetização e letramento"],
+    "Educação Física":["Atividade física adaptada","Natação / hidroterapia","Ecoterapia (atividades ao ar livre)"],
+    "Acompanhamento Terapêutico (AT)":["AT escolar","AT domiciliar","AT comunitário (passeios e inserção social)"],
+    "Nutrição":["Seletividade alimentar","Orientação nutricional para famílias"]
+  };
+  const blocos = [
+    [0,[["08:00","12:00"],["14:00","18:00"]],[0,1,2,3,4]],[1,[["09:00","17:00"]],[0,2,4]],[2,[["13:00","19:00"]],[1,3,5]],
+    [3,[["08:00","16:00"]],[0,1,2,3,4]],[4,[["10:00","18:00"]],[1,2,3]],[5,[["08:00","12:00"]],[0,2,4]],
+    [6,[["14:00","20:00"]],[0,1,3,4]],[7,[["08:30","17:30"]],[2,4,5]],[1,[["08:00","12:00"]],[3,4]],[0,[["13:00","18:00"]],[3]],
+    [2,[["08:00","14:00"]],[0,5]],[4,[["08:00","12:00"]],[1,3]],[6,[["09:00","13:00"]],[2,5]],[7,[["10:00","16:00"]],[0,1]]
+  ];
+  const fichas = [], disp = [];
+  const notas = [[4,5,4,3,4,4,3,3,2,2,3,4],[3,2,3,3,3,4,3,4,2,3,3,4],[5,5,4,4,4,5,4,4,3,3,4,5],[4,4,5,4,4,4,4,3,3,2,3,4]];
+  blocos.forEach((b, i) => {
+    const [ai, horarios, dias] = b;
+    const area = areas[ai];
+    const email = `profissional${String(i+1).padStart(2,'0')}@exemplo.com`;
+    const procs = procsPor[area].slice(0, 2 + (i % 2));
+    const id = 'ex' + i;
+    const av = SITUACOES.map((s, k) => ({situacao: s, nota: notas[i % 4][k], observacao: ''}));
+    fichas.push({
+      id, email, nome: `Profissional ${String(i+1).padStart(2,'0')} (exemplo)`, conselho: i % 5 === 0 ? 'Estagiário' : 'CRP (Psicologia)',
+      registro: i % 5 === 0 ? 'Ausente de numeração' : `0${i+6}/12${i}45`, ausente_numeracao: i % 5 === 0,
+      graduacao: area, area, procedimentos: procs.map(p => `${area} | ${p}`), anos_tea: (i * 3) % 9, formacao_tea: 'Sim, formação ou curso específico em TEA',
+      avaliacao: av,
+      elogios: i % 3 === 0 ? 'A recepção recebe as famílias com muito cuidado; isso faz diferença no primeiro contato.' : '',
+      melhorias: i % 2 === 0 ? 'Materiais de sessão ficam dispersos entre as salas; uma caixa padronizada por área ajudaria.' : '',
+      fluxos: i % 4 === 1 ? 'Demora para receber a grade após a admissão, o que atrasa o início das sessões.' : '',
+      oportunidades: i % 5 === 2 ? 'Grupo de habilidades sociais para adolescentes nas tardes de quinta.' : '',
+      sugestoes: i % 6 === 3 ? 'Padronizar a devolutiva mensal aos pais com um modelo único.' : '',
+      contato_ok: i % 2 === 0
+    });
+    horarios.forEach(([ini, fim]) => dias.forEach(d => {
+      disp.push({ficha_id: id, dia: DIAS[d], inicio: ini + ':00', fim: fim + ':00', horas: horasEntre(ini, fim)});
+    }));
+  });
+  return {fichas, disp, equipe: [...fichas.map(f => ({nome: f.nome, email: f.email, area: f.area})), {nome:'Profissional 16 (exemplo)', email:'profissional16@exemplo.com', area:'Nutrição'}, {nome:'Profissional 17 (exemplo)', email:'profissional17@exemplo.com', area:'Nutrição'}]};
+}
+function horasEntre(a, b){ const [h1,m1]=a.split(':').map(Number), [h2,m2]=b.split(':').map(Number); return ((h2*60+m2)-(h1*60+m1))/60; }
+
+/* ===================== AUTENTICAÇÃO ===================== */
+const TOKEN_KEY = 'pulsao_admin_token';
+function getToken(){ try { return sessionStorage.getItem(TOKEN_KEY); } catch(e){ return null; } }
+function setToken(t){ try { sessionStorage.setItem(TOKEN_KEY, t); } catch(e){} }
+function clearToken(){ try { sessionStorage.removeItem(TOKEN_KEY); } catch(e){} }
+
+function capturarTokenDoLink(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  const t = h.get('access_token');
+  if (t){ setToken(t); history.replaceState(null, '', location.pathname + location.search); }
+}
+
+async function enviarLink(){
+  const email = $('#email').value.trim().toLowerCase();
+  const msg = $('#loginMsg');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = 'Informe um e-mail válido.'; msg.className = 'msg err'; return; }
+  $('#btnLink').disabled = true;
+  msg.className = 'msg'; msg.textContent = 'Enviando link…';
+  const destino = location.origin + location.pathname;
+  try{
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/otp?redirect_to=${encodeURIComponent(destino)}`, {
+      method:'POST',
+      headers:{apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY, 'Content-Type':'application/json'},
+      body: JSON.stringify({email, create_user: true})
+    });
+    if (r.ok){
+      msg.textContent = 'Link enviado para ' + email + '. Confira a caixa de entrada e o spam.';
+    } else {
+      let detalhe = '';
+      try { const j = await r.json(); detalhe = j.msg || j.error_description || j.message || ''; } catch(e){}
+      msg.className = 'msg err';
+      msg.textContent = 'Não foi possível enviar o link (' + r.status + '). ' + (detalhe || 'Tente novamente em alguns minutos.');
+    }
+  } catch(e){
+    msg.className = 'msg err';
+    msg.textContent = 'Falha de conexão com o servidor de acesso (' + (e && e.message ? e.message : 'rede') + '). Abra a página pelo endereço publicado, não por pré-visualização.';
+  }
+  $('#btnLink').disabled = false;
+}
+
+async function rest(path){
+  const t = getToken();
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {headers:{apikey: SUPABASE_KEY, Authorization: 'Bearer ' + t}});
+  if (r.status === 401 || r.status === 403) { const e = new Error('auth'); e.auth = true; throw e; }
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+async function carregarDados(){
+  if (DEMO) return dadosExemplo();
+  const [fichas, disp, equipe] = await Promise.all([
+    rest('fichas?select=id,email,nome,conselho,registro,ausente_numeracao,graduacao,area,procedimentos,anos_tea,formacao_tea,avaliacao,elogios,melhorias,fluxos,oportunidades,sugestoes,contato_ok,updated_at&order=updated_at.desc'),
+    rest('disponibilidade?select=ficha_id,dia,inicio,fim,horas'),
+    rest('equipe?select=nome,email,area&order=nome.asc')
+  ]);
+  return {fichas, disp, equipe};
+}
+
+/* ===================== AGREGAÇÕES ===================== */
+function analisar({fichas, disp, equipe}){
+  const porFicha = {};
+  disp.forEach(d => { (porFicha[d.ficha_id] ||= []).push(d); });
+  const fichaPorEmail = Object.fromEntries(fichas.map(f => [f.email.toLowerCase(), f]));
+  const horasFicha = id => (porFicha[id] || []).reduce((s, d) => s + Number(d.horas), 0);
+
+  // Capacidade por especialidade
+  const cap = {};
+  fichas.forEach(f => {
+    const a = f.area || 'Não informado';
+    cap[a] ||= {prof: 0, horas: 0};
+    cap[a].prof++; cap[a].horas += horasFicha(f.id);
+  });
+
+  // Capacidade por procedimento (horas contadas uma vez por profissional)
+  const proc = {};
+  fichas.forEach(f => {
+    const h = horasFicha(f.id);
+    (f.procedimentos || []).forEach(p => {
+      const nome = String(p).split(' | ').pop();
+      proc[nome] ||= {prof: 0, horas: 0};
+      proc[nome].prof++; proc[nome].horas += h;
+    });
+  });
+
+  // Grade: profissionais disponíveis por faixa de 30 min e dia
+  const grade = {}; // dia -> slot -> count
+  disp.forEach(d => {
+    const [h1,m1] = hora(d.inicio).split(':').map(Number), [h2,m2] = hora(d.fim).split(':').map(Number);
+    for (let s = h1*2 + m1/30; s < h2*2 + m2/30; s++){
+      grade[d.dia] ||= {}; grade[d.dia][s] = (grade[d.dia][s] || 0) + 1;
+    }
+  });
+
+  // Avaliação por etapa
+  const aval = {};
+  fichas.forEach(f => (f.avaliacao || []).forEach(a => {
+    if (a.nota == null) return;
+    aval[a.situacao] ||= {soma:0, n:0, crit:0};
+    aval[a.situacao].soma += Number(a.nota); aval[a.situacao].n++;
+    if (Number(a.nota) <= 2) aval[a.situacao].crit++;
+  }));
+  const avalLista = Object.entries(aval).map(([k, v]) => ({etapa: k, media: v.soma / v.n, n: v.n, pctCrit: v.crit / v.n}))
+    .sort((a, b) => a.media - b.media);
+  const notaGeral = avalLista.length ? avalLista.reduce((s, x) => s + x.media * x.n, 0) / avalLista.reduce((s, x) => s + x.n, 0) : null;
+  const critTotal = avalLista.reduce((s, x) => s + Math.round(x.pctCrit * x.n), 0);
+
+  // Pendências
+  const pend = equipe.map(e => ({...e, ok: !!fichaPorEmail[(e.email || '').toLowerCase()], data: fichaPorEmail[(e.email || '').toLowerCase()]?.updated_at}));
+  const naoCadastrados = fichas.filter(f => !equipe.some(e => (e.email || '').toLowerCase() === f.email.toLowerCase()));
+
+  return {fichas, porFicha, cap, proc, grade, avalLista, notaGeral, critTotal, pend, naoCadastrados,
+          horasTotal: disp.reduce((s, d) => s + Number(d.horas), 0)};
+}
+
+/* ===================== RENDER ===================== */
+function barra(v, max, crit){
+  const pct = max ? Math.round(v / max * 100) : 0;
+  return `<div class="bar ${crit ? 'crit' : ''}"><i style="width:${pct}%"></i></div>`;
+}
+
+function renderPainel(R){
+  $('#kFichas').textContent = R.fichas.length;
+  $('#kPend').textContent = R.pend.filter(p => !p.ok).length;
+  $('#kHoras').textContent = fmt(R.horasTotal, 0);
+  $('#kNota').textContent = R.notaGeral == null ? '–' : fmt(R.notaGeral, 1);
+  $('#kCrit').textContent = R.critTotal;
+
+  // Capacidade por especialidade
+  const capL = Object.entries(R.cap).sort((a, b) => b[1].horas - a[1].horas);
+  const maxH = Math.max(1, ...capL.map(([,v]) => v.horas));
+  $('#tblCap').innerHTML = capL.length ? `
+    <table><thead><tr><th>Especialidade</th><th class="n">Profissionais</th><th class="n">Horas/semana</th><th class="n">Média por profissional</th><th style="width:30%">Proporção</th></tr></thead><tbody>
+    ${capL.map(([a, v]) => `<tr><td><b>${esc(a)}</b></td><td class="n">${v.prof}</td><td class="n">${fmt(v.horas,1)}</td><td class="n">${fmt(v.prof ? v.horas / v.prof : 0,1)}</td><td>${barra(v.horas, maxH)}</td></tr>`).join('')}
+    </tbody></table>` : '<div class="empty">Sem fichas recebidas ainda.</div>';
+
+  // Procedimentos
+  const procL = Object.entries(R.proc).sort((a, b) => b[1].prof - a[1].prof);
+  const maxP = Math.max(1, ...procL.map(([,v]) => v.prof));
+  $('#tblProc').innerHTML = procL.length ? `
+    <table><thead><tr><th>Procedimento</th><th class="n">Profissionais</th><th class="n">Horas/semana (soma)</th><th style="width:30%">Cobertura da equipe</th></tr></thead><tbody>
+    ${procL.map(([p, v]) => `<tr><td>${esc(p)}</td><td class="n">${v.prof}</td><td class="n">${fmt(v.horas,1)}</td><td>${barra(v.prof, maxP)}</td></tr>`).join('')}
+    </tbody></table>` : '<div class="empty">Sem procedimentos registrados.</div>';
+
+  // Grade (heatmap): linhas = faixas de 30 min (06:00 a 21:30), colunas = dias
+  const slots = []; for (let s = 12; s < 44; s++) slots.push(s); // 06:00 até 21:30
+  const max = Math.max(1, ...DIAS.flatMap(d => Object.values(R.grade[d] || {})));
+  const cor = n => {
+    if (!n) return '#eef5f5';
+    const r = n / max;
+    return r > .75 ? '#0F7C7C' : r > .5 ? '#6fb5b5' : r > .25 ? '#BFE0E0' : '#DDEFEF';
+  };
+  const hhmm = s => String(Math.floor(s/2)).padStart(2,'0') + ':' + (s % 2 ? '30' : '00');
+  $('#heat').innerHTML = `<div class="heat">
+    <div></div>${DIAS_CURTO.map(d => `<div class="d">${d}</div>`).join('')}
+    ${slots.map(s => `<div class="h">${s % 2 === 0 ? hhmm(s) : ''}</div>` +
+      DIAS.map(d => `<div class="c" title="${DIAS_CURTO[DIAS.indexOf(d)]} ${hhmm(s)}: ${(R.grade[d] || {})[s] || 0} profissional(is)" style="background:${cor((R.grade[d] || {})[s] || 0)}"></div>`).join('')
+    ).join('')}
+  </div>`;
+
+  // Processos
+  $('#tblProcesso').innerHTML = R.avalLista.length ? `
+    <table><thead><tr><th>Etapa</th><th class="n">Média (1 a 5)</th><th class="n">Respostas</th><th class="n">% críticas (1 ou 2)</th><th style="width:28%">Nota média</th></tr></thead><tbody>
+    ${R.avalLista.map(x => `<tr><td>${esc(x.etapa)}</td><td class="n"><b>${fmt(x.media,1)}</b></td><td class="n">${x.n}</td><td class="n">${fmt(x.pctCrit*100,0)}%</td><td>${barra(x.media, 5, x.media < 3)}</td></tr>`).join('')}
+    </tbody></table>` : '<div class="empty">Sem avaliações de processos ainda.</div>';
+
+  // Feedback
+  const feed = (campo, label) => R.fichas.filter(f => f[campo] && String(f[campo]).trim())
+    .map(f => `<div class="item ${campo === 'elogios' ? '' : (campo === 'fluxos' ? 'coral' : 'gold')}"><b>${esc(label)}</b> · <small style="display:inline">${esc(f.area)}</small><p>${esc(f[campo])}</p></div>`).join('');
+  const elogios = feed('elogios', 'Elogio');
+  $('#listElogios').innerHTML = elogios || '<div class="empty">Nenhum elogio registrado.</div>';
+  const sug = [feed('fluxos', 'Fluxo / gargalo'), feed('melhorias', 'Melhoria'), feed('oportunidades', 'Oportunidade'), feed('sugestoes', 'Sugestão')].join('');
+  $('#listSugestoes').innerHTML = sug || '<div class="empty">Nenhuma sugestão registrada.</div>';
+
+  // Equipe
+  if (!R.pend.length){
+    $('#tblEquipe').innerHTML = `<div class="empty">A equipe ainda não foi cadastrada. ${R.fichas.length} ficha(s) recebida(s).</div>`;
+  } else {
+    $('#tblEquipe').innerHTML = `<table><thead><tr><th>Profissional</th><th>Área</th><th>Status</th><th>Último envio</th></tr></thead><tbody>
+      ${R.pend.map(p => `<tr><td>${esc(p.nome)}</td><td>${esc(p.area || '')}</td>
+        <td><span class="tag ${p.ok ? 'ok' : 'pend'}">${p.ok ? 'Preenchido' : 'Pendente'}</span></td>
+        <td>${p.data ? new Date(p.data).toLocaleString('pt-BR') : '–'}</td></tr>`).join('')}
+      </tbody></table>
+      ${R.naoCadastrados.length ? `<p class="sub" style="margin-top:10px">Fichas recebidas de e-mails que não estão na lista da equipe: ${R.naoCadastrados.length}.</p>` : ''}`;
+  }
+}
+
+/* ===================== EXPORTAÇÃO (MODELO) ===================== */
+function exportarCSV(R){
+  const cabecalho = ['Profissional','Especialidade','Dia da semana','Hora início','Hora fim','Honorário (valor)','Base do repasse','E-mail'];
+  const linhas = [];
+  R.fichas.forEach(f => (R.porFicha[f.id] || []).forEach(d => {
+    linhas.push([f.nome, f.area, d.dia, hora(d.inicio), hora(d.fim), '', '', f.email]);
+  }));
+  const esc2 = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const csv = '﻿' + [cabecalho, ...linhas].map(l => l.map(esc2).join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
+  a.download = 'Modelo_Profissionais_Disponibilidade.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ===================== FLUXO ===================== */
+let ultimoR = null;
+async function iniciarPainel(){
+  show('#login', false);
+  show('#painel', true);
+  show('#actions', !DEMO);
+  show('#demoBanner', DEMO);
+  setStatus('Carregando dados…');
+  try{
+    const dados = await carregarDados();
+    ultimoR = analisar(dados);
+    renderPainel(ultimoR);
+    setStatus(DEMO ? '' : `Atualizado em ${new Date().toLocaleString('pt-BR')}.`);
+  } catch(e){
+    if (e.auth){ clearToken(); mostrarLogin('Sua sessão expirou. Solicite um novo link de acesso.'); return; }
+    setStatus('Não foi possível carregar os dados agora. Tente novamente.', true);
+  }
+}
+
+function mostrarLogin(msg){
+  show('#painel', false);
+  show('#login', true);
+  const m = $('#loginMsg'); m.textContent = msg || ''; m.className = 'msg' + (msg ? ' err' : '');
+}
+
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('[data-p]').forEach(c => c.classList.toggle('hidden', c.dataset.p !== b.dataset.t));
+}));
+$('#btnLink').addEventListener('click', enviarLink);
+$('#email').addEventListener('keydown', e => { if (e.key === 'Enter') enviarLink(); });
+$('#btnCsv').addEventListener('click', () => ultimoR && exportarCSV(ultimoR));
+$('#btnSair').addEventListener('click', () => { clearToken(); location.reload(); });
+
+capturarTokenDoLink();
+if (DEMO){
+  iniciarPainel();
+} else if (getToken()){
+  iniciarPainel();
+} else {
+  mostrarLogin('');
+}
+// Oculta as abas de tela sem dados até a primeira renderização
+document.querySelectorAll('[data-p]').forEach(c => { if (c.dataset.p !== 'cap') c.classList.add('hidden'); });
+</script>
+</body>
+</html>
