@@ -6,6 +6,10 @@
 <title>Análise da Disponibilidade · Pulsão TEA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* esp-h */
+.esp-h{font-family:Poppins,Inter,sans-serif;font-weight:700;color:var(--navy);font-size:12.5px;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.esp-h:first-child{margin-top:0}
+
 :root{--navy:#0B2E3C;--navy-2:#134457;--teal:#0F7C7C;--teal-l:#E6F3F3;--teal-m:#BFE0E0;--coral:#F26B5B;--coral-l:#FDECE9;--bg:#F3F7F7;--txt:#1d2b31;--mut:#5b6b72;--line:#D5E2E4;--white:#fff;--warn:#8a5a00;--warn-l:#FFF4DB}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5}
@@ -554,12 +558,24 @@ function renderPainel(R){
     ${R.avalLista.map(x => `<tr><td>${esc(x.etapa)}</td><td class="n"><b>${fmt(x.media,1)}</b></td><td class="n">${x.n}</td><td class="n">${fmt(x.pctCrit*100,0)}%</td><td>${barra(x.media, 5, x.media < 3)}</td></tr>`).join('')}
     </tbody></table>` : '<div class="empty">Sem avaliações de processos ainda.</div>';
 
-  // Feedback
-  const feed = (campo, label) => R.fichas.filter(f => f[campo] && String(f[campo]).trim())
-    .map(f => `<div class="item ${campo === 'elogios' ? '' : (campo === 'fluxos' ? 'coral' : 'gold')}"><b>${esc(label)}</b> · <small style="display:inline">${esc(f.area)}</small><p>${esc(f[campo])}</p></div>`).join('');
-  const elogios = feed('elogios', 'Elogio');
+  // Feedback: agrupado por especialidade, com o nome do profissional em cada item
+  const feedAgrupado = (itens) => {
+    const porArea = {};
+    R.fichas.forEach(f => {
+      const linhas = itens.filter(([campo]) => f[campo] && String(f[campo]).trim());
+      if (!linhas.length) return;
+      const area = f.area || 'Sem especialidade';
+      (porArea[area] = porArea[area] || []).push({f, linhas});
+    });
+    return Object.keys(porArea).sort().map(area => `
+      <div class="esp-h">${esc(area)}</div>
+      ${porArea[area].map(({f, linhas}) => linhas.map(([campo, label, tipo]) => `
+        <div class="item ${tipo || ''}"><b>${esc(label)}</b> · <strong>${esc(f.nome)}</strong><p>${esc(f[campo])}</p></div>`).join('')).join('')}
+    `).join('');
+  };
+  const elogios = feedAgrupado([['elogios', 'Elogio', '']]);
   $('#listElogios').innerHTML = elogios || '<div class="empty">Nenhum elogio registrado.</div>';
-  const sug = [feed('fluxos', 'Fluxo / gargalo'), feed('melhorias', 'Melhoria'), feed('oportunidades', 'Oportunidade'), feed('sugestoes', 'Sugestão')].join('');
+  const sug = feedAgrupado([['fluxos', 'Fluxo / gargalo', 'coral'], ['melhorias', 'Melhoria', 'gold'], ['oportunidades', 'Oportunidade', 'gold'], ['sugestoes', 'Sugestão', 'gold']]);
   $('#listSugestoes').innerHTML = sug || '<div class="empty">Nenhuma sugestão registrada.</div>';
 
   // Fichas: seleção e exclusão
