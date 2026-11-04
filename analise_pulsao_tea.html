@@ -149,6 +149,14 @@ input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);b
   .fx th,.fx td{padding:3px 5px !important;font-size:9px !important}
   .fx p{margin:0;font-size:9.5px;white-space:pre-wrap;line-height:1.4}
   .fx .txt{margin-top:4px}
+  .stk{display:block}
+  .stk .bl{display:block;margin-bottom:8px}
+  .stk .bl table{width:100%}
+  .stk .bl{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff}
+  .stk h3{margin:0 0 5px;font-size:9.5px;color:var(--teal);text-transform:uppercase;letter-spacing:.04em;font-family:Poppins,Inter,sans-serif}
+  .stk p{margin:0;font-size:9.5px;white-space:pre-wrap;line-height:1.4}
+  .stk table{font-size:9px}
+  .stk th,.stk td{padding:3px 5px !important;font-size:9px !important}
 }
 </style>
 </head>
@@ -757,30 +765,30 @@ function paginaFicha(f, disp){
   const tabAv = av.length
     ? `<table><thead><tr><th>Etapa</th><th class="n">Nota</th><th>Observação</th></tr></thead><tbody>${av.map(a => `<tr><td>${esc(a.situacao)}</td><td class="n"><b>${a.nota ?? '–'}</b></td><td>${esc(a.observacao || '')}</td></tr>`).join('')}</tbody></table>`
     : '<p>Sem avaliação registrada.</p>';
+  const cadastro = htmlDl([
+    ['Conselho', f.conselho], ['Registro', f.ausente_numeracao ? 'Ausente de numeração' : f.registro],
+    ['UF', f.uf_conselho], ['CPF', f.cpf], ['CNPJ', f.cnpj], ['E-mail', f.email], ['WhatsApp', f.whatsapp],
+    ['Graduação', f.graduacao], ['Ano de conclusão', f.ano_conclusao], ['ABA / TEA', f.formacao_tea], ['Anos com TEA', f.anos_tea],
+    ['Primeiro envio', f.created_at ? new Date(f.created_at).toLocaleString('pt-BR') : ''],
+    ['Aceita aprofundar sugestões', f.contato_ok ? 'Sim' : 'Não'],
+    ['Consentimento LGPD', f.consentimento ? 'Sim' : 'Não']]);
   return `<section class="pg">
     <div class="pg-head">
       <div><h2>${esc(f.nome)}</h2><p>${esc(f.area || '')} · ${esc(f.conselho || '')} · Atualizado em ${f.updated_at ? new Date(f.updated_at).toLocaleString('pt-BR') : '–'}</p></div>
       <div style="text-align:right"><strong>${fmt(total, 1)} h por semana</strong><p>disponibilidade informada</p></div>
     </div>
     <div class="fx">
-      <div class="bl"><h3>Identificação</h3>${htmlDl([
-        ['Conselho', f.conselho], ['Registro', f.ausente_numeracao ? 'Ausente de numeração' : f.registro],
-        ['UF', f.uf_conselho], ['CPF', f.cpf], ['CNPJ', f.cnpj], ['E-mail', f.email], ['WhatsApp', f.whatsapp]])}</div>
-      <div class="bl"><h3>Formação</h3>${htmlDl([
-        ['Graduação', f.graduacao], ['Ano de conclusão', f.ano_conclusao], ['ABA / TEA', f.formacao_tea], ['Anos com TEA', f.anos_tea]])}
-        <p class="txt"><b>Pós e cursos:</b> ${esc(f.pos || '–')}</p></div>
+      <div class="bl w2"><h3>Cadastro e formação</h3>${cadastro}<p class="txt"><b>Pós e cursos:</b> ${esc(f.pos || '–')}</p></div>
       <div class="bl"><h3>Procedimentos</h3><p>${procs.length ? esc(procs.join('\n')) : '–'}</p></div>
       <div class="bl"><h3>Disponibilidade</h3>${tabDisp}<p class="txt"><b>Observações:</b> ${esc(f.obs_disp || '–')}</p></div>
-      <div class="bl w2"><h3>Avaliação dos processos (nota de 1 a 5)</h3>${tabAv}</div>
-      <div class="bl"><h3>Cadastro</h3>${htmlDl([
-        ['Primeiro envio', f.created_at ? new Date(f.created_at).toLocaleString('pt-BR') : ''],
-        ['Aceita aprofundar sugestões', f.contato_ok ? 'Sim' : 'Não'],
-        ['Consentimento LGPD', f.consentimento ? 'Sim' : 'Não']])}</div>
-      <div class="bl"><h3>Elogios</h3><p>${esc(f.elogios || '–')}</p></div>
-      <div class="bl"><h3>Fluxos e gargalos</h3><p>${esc(f.fluxos || '–')}</p></div>
-      <div class="bl"><h3>Melhorias</h3><p>${esc(f.melhorias || '–')}</p></div>
-      <div class="bl"><h3>Oportunidades</h3><p>${esc(f.oportunidades || '–')}</p></div>
-      <div class="bl"><h3>Sugestões</h3><p>${esc(f.sugestoes || '–')}</p></div>
+    </div>
+    <div class="stk">
+      <div class="bl" style="break-inside:auto;page-break-inside:auto"><h3>Avaliação dos processos (nota de 1 a 5)</h3>${tabAv}</div>
+      ${txtBloco('Elogios', f.elogios)}
+      ${txtBloco('Sugestões', f.sugestoes)}
+      ${txtBloco('Fluxos e gargalos', f.fluxos)}
+      ${txtBloco('Melhorias', f.melhorias)}
+      ${txtBloco('Oportunidades', f.oportunidades)}
     </div>
   </section>`;
 }
