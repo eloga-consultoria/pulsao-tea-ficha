@@ -741,10 +741,70 @@ function exportarExcel(fichas){
   const disp = ultimoR.dados.disp.filter(d => ids.has(d.ficha_id));
   const nomePorId = Object.fromEntries(fichas.map(f => [f.id, f.nome]));
   const dt = v => v ? new Date(v).toLocaleString('pt-BR') : '';
+  const dispDe = id => disp.filter(d => d.ficha_id === id);
+  const horasSem = id => dispDe(id).reduce((t, d) => t + Number(d.horas), 0);
+  const rotulo = f => `${f.nome} - ${f.conselho || ''}: ${f.ausente_numeracao ? 'Ausente de numeração' : (f.registro || '')}`;
+  const nAusente = f => f.ausente_numeracao ? 'Ausente de numeração' : (f.registro || '');
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fichas.map(f => ({
-    'Nome': f.nome, 'Conselho': f.conselho || '',
-    'Registro': f.ausente_numeracao ? 'Ausente de numeração' : (f.registro || ''),
+  const aba = (nome, linhas, largura) => {
+    const ws = XLSX.utils.json_to_sheet(linhas);
+    if (largura) ws['!cols'] = largura.map(w => ({wch: w}));
+    XLSX.utils.book_append_sheet(wb, ws, nome);
+  };
+
+  // 1. Modelo da gestão: aba Perfis (uma linha por profissional)
+  aba('Perfis', fichas.map(f => ({
+    'Profissional': rotulo(f),
+    'Especialidades': f.area || '',
+    'Formação': [f.graduacao, f.pos].filter(Boolean).join(' · '),
+    'Cargo': '',
+    'E-mail': f.email,
+    'Conselho': f.conselho || '',
+    'Nº do conselho': nAusente(f),
+    'CBO': '',
+    'Sala': '',
+    'Base de repasse': '',
+    'Honorário (valor/%)': '',
+    'Repasse fixo Avaliação Neuropsicológica (R$)': '',
+    'Capacidade (h)': horasSem(f.id),
+    'Cap. líquida (h)': horasSem(f.id),
+    'Horas ocupadas': '',
+    '% Ocupação': '',
+    'Horas ociosas': '',
+    '% Ociosidade': '',
+    'Realizados': '',
+    'Faltas do paciente': '',
+    '% Absenteísmo': '',
+    'Canc. prof.': '',
+    'Canc. clínica': '',
+    'Remarcados': '',
+    '% Realização': ''
+  })), [48, 26, 36, 14, 30, 12, 22, 10, 10, 16, 18, 26, 14, 14, 14, 12, 14, 14, 12, 16, 14, 12, 12, 12, 14]);
+
+  // 2. Modelo da gestão: aba Ocupação semanal (capacidade por semana, a partir da segunda-feira atual)
+  const segunda = new Date(); segunda.setHours(0, 0, 0, 0);
+  segunda.setDate(segunda.getDate() - ((segunda.getDay() + 6) % 7));
+  const semanas = [0, 1, 2, 3].map(k => {
+    const ini = new Date(segunda); ini.setDate(ini.getDate() + k * 7);
+    const fim = new Date(ini); fim.setDate(fim.getDate() + 6);
+    const p = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+    return p(ini) + ' a ' + p(fim);
+  });
+  aba('Ocupação semanal', fichas.flatMap(f => semanas.map(sem => ({
+    'Profissional': rotulo(f),
+    'Semana': sem,
+    'Agendamentos': '',
+    'Capacidade (h)': horasSem(f.id),
+    'Bloqueio (h)': '',
+    'Cap. líquida (h)': horasSem(f.id),
+    'Horas ocupadas': '',
+    '% Ocupação': '',
+    'Horas ociosas': ''
+  }))), [48, 16, 14, 14, 14, 16, 16, 12, 14]);
+
+  // 3. Dados completos (todos os campos preenchidos pelo profissional)
+  aba('Fichas completas', fichas.map(f => ({
+    'Nome': f.nome, 'Conselho': f.conselho || '', 'Registro': nAusente(f),
     'UF do conselho': f.uf_conselho || '', 'CPF': f.cpf || '', 'CNPJ': f.cnpj || '',
     'E-mail': f.email, 'WhatsApp': f.whatsapp || '', 'Graduação': f.graduacao || '',
     'Ano de conclusão': f.ano_conclusao ?? '', 'Pós-graduações e cursos': f.pos || '',
@@ -756,19 +816,20 @@ function exportarExcel(fichas){
     'Consentimento LGPD': f.consentimento ? 'Sim' : 'Não',
     'Primeiro envio': dt(f.created_at),
     'Última atualização': dt(f.updated_at)
-  }))), 'Fichas');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(disp.map(d => ({
+  })));
+  aba('Disponibilidade', disp.map(d => ({
     'Profissional': nomePorId[d.ficha_id], 'Dia': d.dia, 'Início': hora(d.inicio), 'Fim': hora(d.fim), 'Horas': Number(d.horas)
-  }))), 'Disponibilidade');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fichas.flatMap(f => (f.avaliacao || []).map(a => ({
+  })));
+  aba('Avaliação', fichas.flatMap(f => (f.avaliacao || []).map(a => ({
     'Profissional': f.nome, 'Etapa': a.situacao, 'Nota (1 a 5)': a.nota ?? '', 'Observação': a.observacao || ''
-  })))), 'Avaliação');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fichas.map(f => ({
-    'Profissional': f.nome, 'Elogios': f.elogios || '', 'Fluxos e gargalos': f.fluxos || '',
+  }))));
+  aba('Textos', fichas.map(f => ({
+    'Profissional': f.nome, 'Especialidade': f.area || '', 'Elogios': f.elogios || '', 'Fluxos e gargalos': f.fluxos || '',
     'Melhorias': f.melhorias || '', 'Oportunidades': f.oportunidades || '', 'Sugestões': f.sugestoes || ''
-  }))), 'Textos');
-  XLSX.writeFile(wb, 'Pulsao_TEA_fichas_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-  setStatus('Excel gerado com ' + fichas.length + ' profissional(is).');
+  })));
+
+  XLSX.writeFile(wb, 'Pulsao_TEA_relatorio_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+  setStatus('Planilha gerada com ' + fichas.length + ' profissional(is).');
 }
 
 function htmlDl(pares){
