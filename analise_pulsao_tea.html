@@ -127,14 +127,15 @@ input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);b
   #printArea .pr tfoot{display:table-footer-group}
   #printArea .pr > tbody > tr > td{padding:0 18mm;border:0;vertical-align:top}
   #printArea .card{box-shadow:none !important}
-  #printArea .card, #printArea .pg-relatorio .card, #printArea table{break-inside:avoid;page-break-inside:avoid}
+  #printArea .card{break-inside:auto;page-break-inside:auto}
+  #printArea .bl, #printArea tr, #printArea .kpis > *{break-inside:avoid;page-break-inside:avoid}
   #printArea .card > h2, #printArea .card > h3, #printArea .rel-titulo, .pg-head{break-after:avoid;page-break-after:avoid}
   #printArea .card{margin-bottom:10px}
   #printArea .rel-titulo{margin-bottom:10px}
-  .pg{break-before:page;page-break-before:always}
-  .pg:first-child{break-before:auto;page-break-before:auto}
+  .pg{margin-top:14px;padding-top:12px;border-top:2px solid var(--navy);break-inside:auto}
+  .pg:first-child{border-top:0;padding-top:0;margin-top:0}
   .pg:last-child{page-break-after:auto;break-after:auto}
-  .pg-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--navy);padding-bottom:6px;margin-bottom:10px}
+  .pg-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:10px}
   .pg-head h2{margin:0;font-size:17px;color:var(--navy);font-family:Poppins,Inter,sans-serif}
   .pg-head p{margin:2px 0 0;color:var(--mut);font-size:10px}
   .fx{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-items:start}
@@ -719,9 +720,11 @@ function exportarExcel(fichas){
     'Ano de conclusão': f.ano_conclusao ?? '', 'Pós-graduações e cursos': f.pos || '',
     'Formação em ABA/TEA': f.formacao_tea || '', 'Anos com TEA': f.anos_tea ?? '',
     'Área principal': f.area || '',
-    'Procedimentos': (f.procedimentos || []).map(p => String(p).split(' | ').pop()).join('; '),
+    'Procedimentos': (f.procedimentos || []).join('; '),
     'Observações de disponibilidade': f.obs_disp || '',
     'Aceita aprofundar sugestões': f.contato_ok ? 'Sim' : 'Não',
+    'Consentimento LGPD': f.consentimento ? 'Sim' : 'Não',
+    'Primeiro envio': dt(f.created_at),
     'Última atualização': dt(f.updated_at)
   }))), 'Fichas');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(disp.map(d => ({
@@ -745,7 +748,7 @@ function txtBloco(titulo, texto, w){
   return `<div class="bl ${w || ''}"><h3>${esc(titulo)}</h3><p>${texto ? esc(texto) : '–'}</p></div>`;
 }
 function paginaFicha(f, disp){
-  const procs = (f.procedimentos || []).map(p => String(p).split(' | ').pop());
+  const procs = (f.procedimentos || []).map(p => String(p));
   const total = disp.reduce((s, d) => s + Number(d.horas), 0);
   const tabDisp = disp.length
     ? `<table><thead><tr><th>Dia</th><th>Início</th><th>Fim</th><th class="n">Horas</th></tr></thead><tbody>${disp.map(d => `<tr><td>${esc(d.dia)}</td><td>${hora(d.inicio)}</td><td>${hora(d.fim)}</td><td class="n">${fmt(d.horas, 2)}</td></tr>`).join('')}</tbody></table>`
@@ -769,10 +772,15 @@ function paginaFicha(f, disp){
       <div class="bl"><h3>Procedimentos</h3><p>${procs.length ? esc(procs.join('\n')) : '–'}</p></div>
       <div class="bl"><h3>Disponibilidade</h3>${tabDisp}<p class="txt"><b>Observações:</b> ${esc(f.obs_disp || '–')}</p></div>
       <div class="bl w2"><h3>Avaliação dos processos (nota de 1 a 5)</h3>${tabAv}</div>
+      <div class="bl"><h3>Cadastro</h3>${htmlDl([
+        ['Primeiro envio', f.created_at ? new Date(f.created_at).toLocaleString('pt-BR') : ''],
+        ['Aceita aprofundar sugestões', f.contato_ok ? 'Sim' : 'Não'],
+        ['Consentimento LGPD', f.consentimento ? 'Sim' : 'Não']])}</div>
       <div class="bl"><h3>Elogios</h3><p>${esc(f.elogios || '–')}</p></div>
       <div class="bl"><h3>Fluxos e gargalos</h3><p>${esc(f.fluxos || '–')}</p></div>
       <div class="bl"><h3>Melhorias</h3><p>${esc(f.melhorias || '–')}</p></div>
-      <div class="bl"><h3>Oportunidades e sugestões</h3><p>${esc([f.oportunidades, f.sugestoes].filter(Boolean).join('\n') || '–')}</p></div>
+      <div class="bl"><h3>Oportunidades</h3><p>${esc(f.oportunidades || '–')}</p></div>
+      <div class="bl"><h3>Sugestões</h3><p>${esc(f.sugestoes || '–')}</p></div>
     </div>
   </section>`;
 }
