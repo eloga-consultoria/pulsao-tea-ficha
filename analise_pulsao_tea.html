@@ -31,6 +31,8 @@ main{padding:18px 0 50px}
 .kpi .l{font-size:12px;color:var(--mut)}
 @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.two.fb-stack{display:block}
+.two.fb-stack > div + div{margin-top:16px}
 @media(max-width:860px){.two{grid-template-columns:1fr}}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -150,6 +152,9 @@ input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);b
   .fx p{margin:0;font-size:9.5px;white-space:pre-wrap;line-height:1.4}
   .fx .txt{margin-top:4px}
   .stk{display:block}
+  #printArea [data-p=fb] .two{display:block !important}
+  #printArea [data-p=fb] .two > div{width:100%;margin-bottom:10px}
+  #printArea [data-p=fb] .two > div + div{margin-top:10px}
   .stk .bl{display:block;margin-bottom:8px}
   .stk .bl table{width:100%}
   .stk .bl{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff}
@@ -248,7 +253,7 @@ input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);b
 
     <!-- FEEDBACK -->
     <div class="card hidden" data-p="fb">
-      <div class="two">
+      <div class="two fb-stack">
         <div>
           <h2>Elogios</h2>
           <p class="sub">O que deve ser mantido.</p>
@@ -282,6 +287,7 @@ input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);b
         <label><input type="checkbox" name="sec" value="processos" checked> Processos</label>
         <label><input type="checkbox" name="sec" value="fb" checked> Elogios e sugestões</label>
         <label><input type="checkbox" name="sec" value="indiv"> Fichas individuais (uma página por profissional, na horizontal)</label>
+        <label><input type="checkbox" name="sec" value="cad" checked> Incluir dados cadastrais nas fichas (CPF, CNPJ, registro, contatos e formação)</label>
       </div>
       <div class="export-box">
         <span class="sec-t" id="selInfo">Todos os profissionais</span>
@@ -755,7 +761,7 @@ function htmlDl(pares){
 function txtBloco(titulo, texto, w){
   return `<div class="bl ${w || ''}"><h3>${esc(titulo)}</h3><p>${texto ? esc(texto) : '–'}</p></div>`;
 }
-function paginaFicha(f, disp){
+function paginaFicha(f, disp, comCadastro = true){
   const procs = (f.procedimentos || []).map(p => String(p));
   const total = disp.reduce((s, d) => s + Number(d.horas), 0);
   const tabDisp = disp.length
@@ -778,7 +784,7 @@ function paginaFicha(f, disp){
       <div style="text-align:right"><strong>${fmt(total, 1)} h por semana</strong><p>disponibilidade informada</p></div>
     </div>
     <div class="fx">
-      <div class="bl w2"><h3>Cadastro e formação</h3>${cadastro}<p class="txt"><b>Pós e cursos:</b> ${esc(f.pos || '–')}</p></div>
+      ${comCadastro ? `<div class="bl w2"><h3>Cadastro e formação</h3>${cadastro}<p class="txt"><b>Pós e cursos:</b> ${esc(f.pos || '–')}</p></div>` : `<div class="bl w2"><h3>Formação</h3>${htmlDl([['Graduação', f.graduacao], ['Ano de conclusão', f.ano_conclusao], ['ABA / TEA', f.formacao_tea], ['Anos com TEA', f.anos_tea]])}<p class="txt"><b>Pós e cursos:</b> ${esc(f.pos || '–')}</p></div>`}
       <div class="bl"><h3>Procedimentos</h3><p>${procs.length ? esc(procs.join('\n')) : '–'}</p></div>
       <div class="bl"><h3>Disponibilidade</h3>${tabDisp}<p class="txt"><b>Observações:</b> ${esc(f.obs_disp || '–')}</p></div>
     </div>
@@ -805,7 +811,8 @@ function clonarSecao(sel){
 function gerarPdf(){
   const secoes = [...document.querySelectorAll('input[name=sec]:checked')].map(i => i.value);
   const indiv = secoes.includes('indiv');
-  const relat = secoes.filter(x => x !== 'indiv');
+  const comCadastro = secoes.includes('cad');
+  const relat = secoes.filter(x => x !== 'indiv' && x !== 'cad');
   const fichas = fichasParaExportar();
   if (!fichas.length){ setStatus('Nenhum profissional para exportar.', true); return; }
   if (!relat.length && !indiv){ setStatus('Marque ao menos uma seção para o PDF.', true); return; }
@@ -826,7 +833,7 @@ function gerarPdf(){
     renderPainel(Rfull);  // restaura o painel completo
   }
   if (indiv){
-    fichas.forEach(f => partes.push(paginaFicha(f, dadosSub.disp.filter(d => d.ficha_id === f.id))));
+    fichas.forEach(f => partes.push(paginaFicha(f, dadosSub.disp.filter(d => d.ficha_id === f.id), comCadastro)));
   }
   const area = $('#printArea');
   area.innerHTML = '<table class="pr"><thead><tr><td><div style="height:44mm"></div></td></tr></thead><tfoot><tr><td><div style="height:30mm"></div></td></tr></tfoot><tbody><tr><td>' + partes.join('') + '</td></tr></tbody></table>';
